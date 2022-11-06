@@ -1,0 +1,3 @@
+[submodule "rimlink"]
+	path = rimlink
+	url = https://github.com/AriAlavi/rimlink
