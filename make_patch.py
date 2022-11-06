@@ -44,6 +44,7 @@ def create_zip(name, zip_name):
     zip_ref.close()
 
 def create_patch(baseFolder:str, newFolder:str) -> str:
+    PATCH_FILENAME = "patch.zip"
     diff = compareStructures(generateStructure(newFolder), generateStructure(baseFolder))
     if not diff:
         print("the files are the same")
@@ -56,6 +57,12 @@ def create_patch(baseFolder:str, newFolder:str) -> str:
         with open(instruction_filename_path, "wb") as file:
             pickle.dump(diff, file)
 
+        for instruction_type in ["add", "modify", "delete"]:
+            try:
+                del diff[instruction_type][PATCH_FILENAME, INSTRUCTION_FILENAME]
+            except ValueError:
+                pass
+            
 
         # add extra folders
         extra_folders = get_folders_by_depth(diff["add"])
@@ -68,7 +75,7 @@ def create_patch(baseFolder:str, newFolder:str) -> str:
             for to_create_folder in to_create_folders:
                 assert isinstance(to_create_folder, HashStructure)
                 os.mkdir(Path(temp_folder_path, to_create_folder.relativePath()))
-            
+
 
         # copy over the files that are to be modified or copied
         for to_copy in diff["add"] + diff["modify"]:
@@ -84,7 +91,9 @@ def create_patch(baseFolder:str, newFolder:str) -> str:
         for x in os.listdir(temp_folder_path):
             print(x)
 
-        create_zip(temp_folder_path, "patch.zip")
+        create_zip(temp_folder_path, PATCH_FILENAME)
+    
+    return PATCH_FILENAME
 
         
 
