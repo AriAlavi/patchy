@@ -5,8 +5,10 @@ import os
 from pathlib import Path
 from make_patch import INSTRUCTION_FILENAME, get_folders_by_depth
 from rimlink.rimlink import HashStructure
+import time
 
 def install_patch(patch_file: str):
+    print("Starting Patch installation")
     assert ".zip" in patch_file
     with TemporaryDirectory() as temp_dir:
         temp_folder_path = Path(temp_dir)
@@ -55,8 +57,31 @@ def install_patch(patch_file: str):
 
         print("Done copying over all files")
         print("Now deleting old files")
+        for delete_file in instructions["delete"]:
+            assert isinstance(delete_file, HashStructure)
+            if delete_file.file:
+                try:
+                    os.remove(delete_file.relativePath())
+                except FileNotFoundError:
+                    pass
+        print("Now deleting old folders")
+        for delete_file in instructions["delete"]:
+            assert isinstance(delete_file, HashStructure)
+            if not delete_file.file:
+                shutil.rmtree(delete_file.relativePath())
 
-        print("Done deleting old files")
+        print("Done deleting old files and folders")
         print("Patch finished installing")
 
-install_patch("patch.zip")
+
+
+
+if __name__ == "__main__":
+    try:
+        install_patch("patch.zip")
+    except Exception as e:
+        print(e)
+        print("Execution Failed!")
+    print("Execution complete")
+    while True:
+        time.sleep(60)
