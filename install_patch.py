@@ -1,6 +1,7 @@
 import pickle
 from tempfile import TemporaryDirectory
 import shutil
+import traceback
 import os
 from pathlib import Path
 from make_patch import INSTRUCTION_FILENAME, get_folders_by_depth
@@ -68,7 +69,10 @@ def install_patch(patch_file: str):
         for delete_file in instructions["delete"]:
             assert isinstance(delete_file, HashStructure)
             if not delete_file.file:
-                shutil.rmtree(delete_file.relativePath())
+                try:
+                    shutil.rmtree(delete_file.relativePath())
+                except Exception:
+                    pass
 
         print("Done deleting old files and folders")
         print("Patch finished installing")
@@ -81,6 +85,7 @@ if __name__ == "__main__":
         install_patch("patch.zip")
     except Exception as e:
         print(e)
+        traceback.print_exc()
         print("Execution Failed!")
     print("Execution complete")
     while True:
