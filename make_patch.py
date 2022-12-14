@@ -38,7 +38,7 @@ def get_folders_by_depth(structureList: List[HashStructure]) -> Dict[int, HashSt
                 extra_folders[depth].append(to_add)
             else:
                 extra_folders[depth] = [to_add,]
-            added_folders.add(added_folders)
+            added_folders.union(added_folders)
         else:
             parent = to_add.parent
             if parent in added_folders:
