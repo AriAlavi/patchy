@@ -29,6 +29,8 @@ def install_patch(patch_file: str):
         for depth in sorted(add_folders.keys()):
             for add_folder in add_folders[depth]:
                 assert isinstance(add_folder, HashStructure), type(add_folder)
+                if add_folder.relativePath() == "":
+                    continue
                 try:
                     os.mkdir(add_folder.relativePath())
                 except FileExistsError:
